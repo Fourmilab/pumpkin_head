@@ -1,0 +1,160 @@
+
+                        Fourmilab Pumpkin Head
+
+                           Development Log
+
+2021 September 14
+
+Began development.  Downloaded the Blender model of a pumpkin from:
+    https://www.blendswap.com/blend/19150
+which is a CC-0 free model.  Deleted extraneous information (ground
+plane, light, camera, etc.  Exported as a Collada .dae file.
+
+After five attempts managed to log into the Beta (Aditi) grid and
+imported the mesh.  After several rounds of experimentation, I
+settled on:
+    Scale 0.1
+    Physical model: Cube
+    Level of detail: Lowest 240
+    Normals: on
+    Physics: Lowest
+This produces a mesh with a land impact of 5 which is recognisable at
+all levels of detail other and Lowest and not totally absurd there.
+The cost of improving Lowest is unwarranted for how much you have to
+bump it up to get anything much better.
+
+After the import, coloured the pumpkin as follows:
+    Melon:  #FFA445 (orange)
+    Stem:   #61BB7D (green)
+
+The cutouts in the pumpkin mesh are transparent and show through the
+back of the pumpkin.  To simulate light coming from within the pumpkin,
+I added a hemisphere scaled to fit against the face of the pumpkin
+and coloured yellow to look kind of like candlelight.  I set its
+mode full bright so it looks more like light coming from the inside.
+I set glow to 0.1 to give it a bit of shine.
+
+Linked the objects with the pumpkin mesh as the root prim and the
+hemisphere light as its only child.  The total land impact of the
+link set is 6.
+
+2021 September 15
+
+Defined a 16 tile texture animation map composed of flickering
+candle flame colours.  This is applied to the hemisphere of the
+light with llSetLinkTextureAnim() to make the light flicker.
+The entire light flickers uniformly, which is correct for
+illumination by a near-point-source candle flame reflected off
+the interior of the pumpkin.
+
+Added a timer and polling logic to use llGetAgentInfo() to query
+AGENT_TYPING and, if so, increase the glow to indicate the users'
+attention.  I'd like to make this work also for voice, but there's
+no direct way to know if a user is speaking.  The alternatives
+are horrid kludges (for example, rigging a sensor to the tip of
+the tongue and detecting its motion relative to the skull rig
+point.  All of this is much further down the rabbit hole than I'm
+inclined to go at this point for such a simple thing that many
+people probably won't notice anyway.
+
+Added our standard command chat user interface mechanism and command
+processor.  Added status command and a set command to control
+flicker on/off and glow settings for active and idle.  There will
+be more to come on this.  The default command channel is 1031
+(Halloween, get it?).
+
+Created alpha masks for use with classic avatars and tested with
+several of them.  There are two alpha masks, one of which hides only
+the head and one which hides head, system hair, and eyes: the user
+should use whichever gets the job done.
+
+2021 September 16
+
+Moved the script from the inner light child prim into the root prim.
+This required a few changes to set properties by link number, but has
+the advantage that it's easier for users to find and edit the script if
+they wish to, and allows the script to access a notecard configuration
+in the root prim where it's easily dropped or installed.
+
+Made screen shots for the marketplace and created a first cut
+marketplace page.  Began the process of organising resources into a
+Git repository along our usual template.
+
+Added a "Set shine" command:
+    Set shine intensity <r,g,b> radius falloff
+which sets a point source light on the inner light prim.  This is
+hideously unrealistic, since the light shines right through the
+walls of the pumpkin, but I can imagine circumstances where you
+might want to do this.  Any parameters which are omitted use the
+current point source settings of the prim.  You turn the shine off
+simply by setting intensity to zero.
+
+Added a:
+    Set light on/off
+command which controls the PRIM_FULL_BRIGHT setting of the hemisphere
+face of the inner light prim.
+
+Added the shine and light settings to the Status command output.
+
+Added a "Delete script" command (which cannot be abbreviated) that
+causes the script to delete itself.  This is intended for pumpkins
+intended for decoration which, once set up, have no reason to be
+listening for commands.  Even idle scripts waste simulator time and
+cause lag in busy regions, and is somebody wants to spread a thousand
+pumpkins around, it's insane for every one to have a script sitting
+there.
+
+2021 September 17
+
+Integrated the script processing code from Polychrome.  To avoid adding
+another separate script, I opted to use this code rather than the more
+recent general script processor.  This code supports automatic reading
+a configuration file named "Fourmilab Pumpkin Head Configuration" if
+present in the inventory.  Included with the script handler are the
+"run" command to run a script and the "echo" command to echo commands
+to local chat as they are executed.
+
+Created local development Git repository in:
+    ~/w/SecondLife/PumpkinHead/git
+with:
+    git init
+
+Logged on to github.com.
+
+Created a new repository:
+    pumpkin_head
+with access URLs:
+    HTTPS: https://github.com/Fourmilab/pumpkin_head.git
+    SSH:   git@github.com:Fourmilab/pumpkin_head.git
+
+Linked the local repository to the GitHub archive:
+    git remote add origin git@github.com:Fourmilab/pumpkin_head.git
+
+Committed the *.md files in the repository root and the
+marketplace/images files to which they link.
+
+Confirmed that my local "git sync" command works with the remote
+repository.
+
+The documents in the repository root now work properly.
+
+Performed an experiment to see if it is possible to detect when an
+avatar is speaking by attaching an object to the tongue via the bento
+bone and then detecting its motion and/or rotation when the avatar
+speaks.  I made a probe to attach to the tongue and verified that it is
+indeed sensitive, tracing the tongue's motion during speech.  Then I
+added a script to the probe that reported its position and rotation.
+Neither the local nor the region position or rotation changed at all,
+even when the probe was strongly wagging around during loud speech.
+What's happening?  It looks like the tongue animation during speech is
+done entirely local to the viewer and hence the script, running on the
+simulator server, is completely unaware the tongue is moving as seen by
+the user.  This rules out the tongue probe scheme as a way to detect
+speech.  And so, for the moment, I'm out of ideas.
+
+2021 September 18
+
+Integrated the development log and Blender mesh model directories into
+the Git repository.
+
+
