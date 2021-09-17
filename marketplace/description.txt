@@ -1,0 +1,26 @@
+Fourmilab Pumpkin Head is a jack-o'lantern (pumpkin carved with a face, lit from within) which may be worn as a head with both mesh and classic avatars, or used as a static decoration for Halloween and other occasions.   It includes a script that allows you to configure its behaviour via chat command, and provides features such as brightening the glow of the light when you're typing in chat.
+
+Land Impact and Permissions
+
+Fourmilab Pumpkin Head may be attached to your avatar and worn as its head without any need for land or permissions to create objects, and without any land impact.  If you wish to use it as a decoration, you need permission to create objects there, either as owner of the property or granted permission by the owner.  Each pumpkin head you create has a land impact of 6.
+
+Development Kit
+
+Fourmilab Pumpkin Head is delivered including a development kit containing all of the object components, models, textures, scripts, and documents used in the objects.  All items including scripts, have “full permissions” (copy, modify, and transfer), so that you can use them as the basis for your own development projects and/or share them with other users in Second Life.
+
+Source code for this project is maintained on and available from the GitHub repository:
+    https://github.com/Fourmilab/pumpkin_head
+
+License
+----------
+
+This product (software, documents, images, and original models) is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+    http://creativecommons.org/licenses/by-sa/4.0/
+    https://creativecommons.org/licenses/by-sa/4.0/legalcode
+You are free to copy and redistribute this material in any medium or format, and to remix, transform, and build upon the material for any purpose, including commercially.  You must give credit, provide a link to the license, and indicate if changes were made.  If you remix, transform, or build upon this material, you must distribute your contributions under the same license as the original.
+
+The mesh pumpkin is based upon the Blender model “Pumpkin”:
+    https://www.blendswap.com/blend/19150
+created by Blend Swap user “anthuk”:
+    https://www.blendswap.com/profile/228200
+and released under the Creative Commons Zero 1.0 license, "You are free to use this asset privately for any use you see fit. If you choose to distribute copies or modified versions of this asset you must do so under the following requirements: There are no requirements for this license.”
