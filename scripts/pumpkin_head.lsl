@@ -217,7 +217,7 @@
 
     //  processCommand  --  Process a command
 
-    integer processCommand(key id, string message) {
+    integer processCommand(key id, string message, integer fromScript) {
 
         if (!checkAccess(id)) {
             llRegionSayTo(id, PUBLIC_CHANNEL,
@@ -236,7 +236,15 @@
             message = llGetSubString(llStringTrim(message, STRING_TRIM_HEAD), 1, -1);
         }
         if (trace || (echo && echoCmd)) {
-            string prefix = ">> /" + (string) commandChannel + " ";
+            string prefix;
+            if (fromScript) {
+                prefix = "++ ";
+                if (trace) {
+                    prefix += "(" + ncSource + ") ";
+                }
+            } else {
+                prefix = ">> /" + (string) commandChannel + " ";
+            }
             tawk(prefix + message);             // Echo command to sender
         }
 
@@ -404,6 +412,7 @@
                     "  Used: " + (string) mUsed + " (" +
                     (string) ((integer) llRound((mUsed * 100.0) / (mUsed + mFree))) + "%)"
             );
+            tawk("Echo: " + eOnOff(echo) + "  Trace: " + eOnOff(trace));
             tawk("Flicker: " + eOnOff(flicker) +
                  "  Light: " + eOnOff(lighton) +
                  "  Glow: active " + eff(glowActive) + " idle " + eff(glowIdle));
@@ -435,15 +444,15 @@
     //  processNotecardCommands  --  Read and execute commands from a notecard
 
     processNotecardCommands(string ncname, key id) {
-        ncSource = ncname;
         whoDat = id;
-        if (llGetInventoryKey(ncSource) == NULL_KEY) {
+        if (llGetInventoryKey(ncname) == NULL_KEY) {
             tawk("No notecard named " + ncSource);
             return;
         }
         if (ncBusy) {
             ncQueue += ncname;
         } else {
+            ncSource = ncname;
             ncLine = 0;
             ncBusy = TRUE;          // Mark busy reading notecard
             ncQuery = llGetNotecardLine(ncSource, ncLine);
@@ -494,7 +503,7 @@
             our chat control channel.  */
 
         listen(integer channel, string name, key id, string message) {
-            processCommand(id, message);
+            processCommand(id, message, FALSE);
         }
 
         /*  We use the timer to poll whether the avatar is typing
@@ -555,7 +564,7 @@
                     //  Ignore comments and send valid commands to client
                     integer valid = TRUE;
                     if ((llStringLength(s) > 0) && (llGetSubString(s, 0, 0) != "#")) {
-                        valid = processCommand(whoDat, s);
+                        valid = processCommand(whoDat, s, TRUE);
                     }
                     if (valid) {
                         //  Fetch next line from notecard

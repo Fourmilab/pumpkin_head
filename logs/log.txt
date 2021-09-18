@@ -160,3 +160,18 @@ Added constrain() calls to avoid out of range arguments to
 PRIM_POINT_LIGHT in the Set shine command.
 
 Set echo command mode default to FALSE.
+
+Added echo and trace mode settings to the Status command output.
+
+Fixed several bugs in the handling of chained scripts and improved
+diagnostic output related to scripts.  First was a flaw which caused
+premature switching to a queued script when it was placed on the queue;
+fixed.  When echo is enabled, we now flag commands from a script with
+“++” instead of ">>” and, if trace is also set, append the source
+script name in parentheses.  The channel number is prefixed only to
+commands which arrive over that channel from chat.  Finally, trace mode
+prints messages to identify the start and end of every script run.
+
+Created a poster for the product, named “Fourmilab Pumpkin Head Poster”
+in the folder delivered from the Marketplace and
+textures/pumpkin_head_poster.png in the Git repository.
