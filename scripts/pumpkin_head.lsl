@@ -16,11 +16,12 @@
     integer FACE_HEMISPHERE = 1;    // Hemisphere facing front
 
     key owner;                      // Owner UUID
-    integer commandChannel = 1031;  // Command channel in chat
+    integer commandChannel = 1031;  // Command channel in chat (date of Halloween)
     integer commandH;               // Handle for command channel
     key whoDat = NULL_KEY;          // Avatar to whom we're attached
     integer restrictAccess = 0;     // Access restriction: 0 none, 1 group, 2 owner
-    integer echo = TRUE;            // Echo chat and script commands ?
+    integer echo = FALSE;           // Echo chat and script commands ?
+    integer trace = FALSE;          // Trace operation ?
     integer flicker = TRUE;         // Should candlelight flicker ?
 
     string helpFileName = "Fourmilab Pumpkin Head User Guide";
@@ -60,6 +61,8 @@
             }
         }
     }
+
+    //  ef  --  Edit float in primate-readable form
 
     //  Static constants to avoid costly allocation
     string efkdig = "0123456789";
@@ -120,10 +123,6 @@
         return ef((string) f);
     }
 
-//    string efv(vector v) {
-//        return ef((string) v);
-//    }
-
     //  checkAccess  --  Check if user has permission to send commands
 
     integer checkAccess(key id) {
@@ -138,7 +137,7 @@
         return abbr == llGetSubString(str, 0, llStringLength(abbr) - 1);
     }
 
-    //  constrain  --  Constrain a float parameter within limit
+    //  constrain  --  Constrain a float parameter within limits
 
     float constrain(float v, float low, float high) {
         if (v > high) {
@@ -236,7 +235,7 @@
             echoCmd = FALSE;
             message = llGetSubString(llStringTrim(message, STRING_TRIM_HEAD), 1, -1);
         }
-        if (echo && echoCmd) {
+        if (trace || (echo && echoCmd)) {
             string prefix = ">> /" + (string) commandChannel + " ";
             tawk(prefix + message);             // Echo command to sender
         }
@@ -247,7 +246,7 @@
         string command = llList2String(args, 0);    // The command
         string sparam = llList2String(args, 1);     // First argument, for convenience
 
-        //  Access who                  Restrict chat command access to public/group/owner
+        //  Access who              Restrict chat command access to public/group/owner
 
         if (abbrP(command, "ac")) {
             string who = sparam;
@@ -366,13 +365,16 @@
                     float radius = llList2Float(cshine, 3);
                     float falloff = llList2Float(cshine, 4);
 
-                    intensity = (float) svalue;
+                    intensity = constrain((float) svalue, 0, 1);
                     if (argn >= 4) {
-                        colour = (vector)  llList2String(args, 3);
+                        colour = (vector) llList2String(args, 3);
+                        colour = < constrain(colour.x, 0, 1),
+                                   constrain(colour.y, 0, 1),
+                                   constrain(colour.z, 0, 1) >;
                         if (argn >= 5) {
-                            radius = (float) llList2String(args, 4);
+                            radius = constrain((float) llList2String(args, 4), 0.1, 20);
                             if (argn >= 6) {
-                                falloff = (float) llList2String(args, 5);
+                                falloff = constrain((float) llList2String(args, 5), 0.01, 2);
                             }
                         }
                     }
@@ -384,9 +386,11 @@
             //  Set trace on/off
 
             } else if (abbrP(sparam, "tr")) {
+                trace = onOff(svalue);
 
             } else {
-                tawk("Invalid.  Set flicker/glow");
+                tawk("Setting \"" + sparam + "\" undefined.  Chat /" +
+                    (string) commandChannel + " help for instructions.");
                 return FALSE;
             }
 
@@ -443,6 +447,9 @@
             ncLine = 0;
             ncBusy = TRUE;          // Mark busy reading notecard
             ncQuery = llGetNotecardLine(ncSource, ncLine);
+            if (trace) {
+                tawk("Running script \"" + ncSource +  "\"");
+            }
         }
     }
 
@@ -461,9 +468,6 @@
                 processNotecardCommands(configScript, owner);
             }
 
-//  Fix erroneously set texture animation on pumpkin stem
-llSetLinkTextureAnim(1, 0, 1, 4, 4, 0, 1, 0.01);
-llSetLinkTextureAnim(1, 0, 0, 4, 4, 0, 1, 0.01);
             //  Set the "inner light" sphere flickering like a candle flame
             if (flicker) {
                 llSetLinkTextureAnim(INNER_LIGHT_LINK,
@@ -483,7 +487,6 @@ llSetLinkTextureAnim(1, 0, 0, 4, 4, 0, 1, 0.01);
         attach(key attachedAgent) {
             if (attachedAgent != NULL_KEY) {
                 whoDat = attachedAgent;
-//llOwnerSay("attach");
           }
         }
 
@@ -523,9 +526,15 @@ llSetLinkTextureAnim(1, 0, 0, 4, 4, 0, 1, 0.01);
         dataserver(key query_id, string data) {
             if (query_id == ncQuery) {
                 if (data == EOF) {
+                    if (trace) {
+                        tawk("End script \"" + ncSource +  "\"");
+                    }
                     if (llGetListLength(ncQueue) > 0) {
                         //  This script is done.  Pop to outer script.
                         ncSource = llList2String(ncQueue, 0);
+                        if (trace) {
+                            tawk("Running script \"" + ncSource +  "\"");
+                        }
                         ncQueue = llDeleteSubList(ncQueue, 0, 0);
                         ncLine = 0;
                         ncQuery = llGetNotecardLine(ncSource, ncLine);
@@ -533,6 +542,9 @@ llSetLinkTextureAnim(1, 0, 0, 4, 4, 0, 1, 0.01);
                         //  Finished top level script.  We're done/
                         ncBusy = FALSE;         // Mark notecard input idle
                         ncSource = "";
+                        if (trace) {
+                            tawk("All scripts done");
+                        }
                         ncLine = 0;
                         if (configuring) {
                             configuring = FALSE;
