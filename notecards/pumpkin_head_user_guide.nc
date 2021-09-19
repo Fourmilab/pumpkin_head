@@ -114,7 +114,7 @@ and lower case.
         which processes them will be gone.  After you've made a custom
         configuration and are satisfied with the results, you can use
         this command to freeze your changes and prevent further
-        modifications while also deducing the load on the simulator.
+        modifications while also reducing the load on the simulator.
         This is particularly useful if you're planning to place
         numerous copies of the pumpkin as decorations, as there's no
         need for them to be running a time-consuming script. To avoid
@@ -219,9 +219,10 @@ contributions under the same license as the original.
 
 ACKNOWLEDGEMENTS
 
-The mesh pumpkin is based upon the Blender model “Pumpkin” created by
-Blend Swap user “anthuk” and released under the Creative Commons Zero
-1.0 license, "You are free to use this asset privately for any use you
-see fit.  If you choose to distribute copies or modified versions of
-this asset you must do so under the following requirements: There are
-no requirements for this license.”
+The mesh pumpkin is based upon the Blender model “Pumpkin”
+(https://www.blendswap.com/blend/19150)  created by Blend Swap user
+“anthuk” (https://www.blendswap.com/profile/228200) and released under
+the Creative Commons Zero 1.0 license, "You are free to use this asset
+privately for any use you see fit.  If you choose to distribute copies
+or modified versions of this asset you must do so under the following
+requirements: There are no requirements for this license.”
